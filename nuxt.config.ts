@@ -6,5 +6,13 @@ export default defineNuxtConfig({
       inline: ['uuid'],
     },
   },
-  modules: ["@nuxt/ui"]
+  css:[
+    '~/assets/css/tailwind.css'
+  ],
+  postcss: {
+    plugins: {
+      tailwindcss: {},
+      autoprefixer: {},
+    },
+  },
 })

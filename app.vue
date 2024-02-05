@@ -1,85 +1,36 @@
 <template>
-  <div class="container">
-    <NCard class="cards">
-      <h1>
-        my Todd
+  <div class="container border-2 border-[#000] p-[2rem] rounded-2xl mx-auto mt-[5rem] w-[50rem]">
+    <div class="border-b-2 border-[#000] p-[2rem]">
+      <h1 class="text-5xl">
+        My Todos
       </h1>
-      <div class="addTodo">
-        <input v-model="input" placeholder="Add a new todo...." />
-        <NButton @click="addTodo">
-          Add
-        </NButton>
+      <div class="flex justify-between mt-[3rem]">
+        <div>
+          <input v-model="input" placeholder="Add a new todo...." class="text-2xl outline-none focus:border-b-2 border-[#000] mt-[0.7rem] w-[30rem] transition-all delay-50" />
+        </div>
+        <div>
+          <button @click="handleReset" :class="!input.length ? 'bg-gray-100 text-[#000] line-through' : 'bg-sky-500 '" class="rounded-md px-[3rem] py-2 text-[#fff]" :disabled="!input.length">
+            Add
+          </button>
+        </div>
       </div>
-    </NCard>
-    <NCard class="card" v-for="todo in todos" :key="todo.id" @click="updateTodo(todo.id)">
-      <h4 :class="todo.completed ? 'complete' : ''">{{ todo.item }}</h4>
-      <p @click.prvent="deleteTodo(todo.id)">X</p>
-    </NCard>
+    </div>
+    <div class="mt-[2rem] border-2 border-[#e7e7e7] p-[1rem] rounded-xl flex justify-between" v-for="todo in todos" :key="todo.id" @click="updateTodo(todo.id)">
+      <h4 :class="todo.completed ? 'line-through' : ''">{{ todo.item }}</h4>
+      <button @click.prvent="deleteTodo(todo.id)" class="transition-transform hover:scale-150">
+        X
+      </button>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-const { data: todos } = useFetch('/api/todo')
-
 const input = ref("")
 
-const addTodo = (async () => {
-  if(!input) return
+const { todos, addTodo, updateTodo, deleteTodo } = useTodos()
 
-  await $fetch('/api/todo', {
-    method: "POST",
-    body: {
-      "title": input.value
-    }
-  })
-  input.value = ""
-})
-
-const updateTodo = (async (todoId) => {
-  await $fetch(`/api/todo/${todoId}`, {
-    method: "PUT"
-  })
-})
-
-const deleteTodo = (async (todoId) => {
-  await $fetch(`/api/todo/${todoId}`, {
-    method: "delete"
-  })
-})
+const handleReset = () => {
+  addTodo(input.value)
+  input.value = ''
+}
 </script>
-<style scoped>
-body {
-  background-color: #fff;
-}
-
-.container {
-  padding: 2rem;
-  margin: 0 auto;
-  max-width: 50%;
-}
-.cards {
-  padding: 2rem
-}
-
-.addTodo {
-  display: flex;
-  justify-content: space-between;
-  cursor: pointer;
-}
-
-input {
-  outline: none;
-}
-
-.card {
-  padding: 0.5rem;
-  margin-top: 1rem;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-}
-
-.complete {
-  text-decoration: line-through;
-}
-</style>
